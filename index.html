@@ -1,0 +1,286 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SCCafé - Smart Contract Factory</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay">
+        <div class="loading-spinner">
+            <div class="spinner"></div>
+            <p>Conectando...</p>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="nav-brand">
+                <i class="fas fa-cube"></i>
+                <span>SCCafé</span>
+            </div>
+            
+            <nav class="nav-menu">
+                <a href="#home" class="nav-link active">Home</a>
+                <a href="#dashboard" class="nav-link">Dashboard</a>
+                <a href="#create" class="nav-link">Criar Token</a>
+                <a href="#admin" class="nav-link admin-only" style="display: none;">Admin</a>
+            </nav>
+
+            <div class="nav-actions">
+                <div class="language-selector">
+                    <select id="languageSelect">
+                        <option value="pt">🇧🇷 PT</option>
+                        <option value="en">🇺🇸 EN</option>
+                        <option value="zh">🇨🇳 中文</option>
+                    </select>
+                </div>
+                
+                <button id="connectWallet" class="btn-connect">
+                    <i class="fas fa-wallet"></i>
+                    <span data-translate="connect_wallet">Conectar Carteira</span>
+                </button>
+                
+                <div id="walletInfo" class="wallet-info" style="display: none;">
+                    <div class="wallet-address"></div>
+                    <div class="wallet-network"></div>
+                    <button id="disconnectWallet" class="btn-disconnect">
+                        <i class="fas fa-sign-out-alt"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main">
+        <!-- Home Section -->
+        <section id="home" class="section active">
+            <div class="container">
+                <div class="hero">
+                    <div class="hero-content">
+                        <h1 class="hero-title">
+                            <span data-translate="hero_title">Crie Tokens com Endereços</span>
+                            <span class="highlight">Determinísticos</span>
+                        </h1>
+                        <p class="hero-subtitle" data-translate="hero_subtitle">
+                            Use a tecnologia CREATE2 para gerar contratos inteligentes com endereços previsíveis e seguros
+                        </p>
+                        <div class="hero-actions">
+                            <button class="btn-primary" onclick="showSection('create')">
+                                <i class="fas fa-plus"></i>
+                                <span data-translate="create_token">Criar Token</span>
+                            </button>
+                            <button class="btn-secondary" onclick="showSection('dashboard')">
+                                <i class="fas fa-chart-bar"></i>
+                                <span data-translate="view_dashboard">Ver Dashboard</span>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="hero-visual">
+                        <div class="blockchain-animation">
+                            <div class="block"></div>
+                            <div class="block"></div>
+                            <div class="block"></div>
+                            <div class="connection-line"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="features">
+                    <div class="feature-card">
+                        <i class="fas fa-shield-alt"></i>
+                        <h3 data-translate="security_title">Segurança Máxima</h3>
+                        <p data-translate="security_desc">Contratos auditados e tecnologia CREATE2 comprovada</p>
+                    </div>
+                    <div class="feature-card">
+                        <i class="fas fa-zap"></i>
+                        <h3 data-translate="speed_title">Deployment Rápido</h3>
+                        <p data-translate="speed_desc">Crie e implemente tokens em segundos</p>
+                    </div>
+                    <div class="feature-card">
+                        <i class="fas fa-cog"></i>
+                        <h3 data-translate="custom_title">Totalmente Customizável</h3>
+                        <p data-translate="custom_desc">Defina nome, símbolo, supply e endereço desejado</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Dashboard Section -->
+        <section id="dashboard" class="section">
+            <div class="container">
+                <div class="section-header">
+                    <h2 data-translate="dashboard_title">Dashboard</h2>
+                    <p data-translate="dashboard_subtitle">Visualize e gerencie seus tokens criados</p>
+                </div>
+
+                <div class="dashboard-stats">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-coins"></i>
+                        </div>
+                        <div class="stat-info">
+                            <span class="stat-number" id="totalTokens">0</span>
+                            <span class="stat-label" data-translate="total_tokens">Tokens Criados</span>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <div class="stat-info">
+                            <span class="stat-number" id="totalValue">$0</span>
+                            <span class="stat-label" data-translate="total_value">Valor Total</span>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-network-wired"></i>
+                        </div>
+                        <div class="stat-info">
+                            <span class="stat-number" id="activeContracts">0</span>
+                            <span class="stat-label" data-translate="active_contracts">Contratos Ativos</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="token-list">
+                    <div class="list-header">
+                        <h3 data-translate="my_tokens">Meus Tokens</h3>
+                        <button class="btn-refresh" onclick="refreshTokens()">
+                            <i class="fas fa-sync-alt"></i>
+                        </button>
+                    </div>
+                    
+                    <div id="tokensList" class="tokens-grid">
+                        <!-- Tokens will be loaded here -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Create Token Section -->
+        <section id="create" class="section">
+            <div class="container">
+                <div class="section-header">
+                    <h2 data-translate="create_token_title">Criar Novo Token</h2>
+                    <p data-translate="create_token_subtitle">Configure seu token personalizado com endereço determinístico</p>
+                </div>
+
+                <div class="create-form-wrapper">
+                    <form id="createTokenForm" class="create-form">
+                        <div class="form-group">
+                            <label data-translate="token_name">Nome do Token:</label>
+                            <input type="text" id="tokenName" placeholder="Ex: Meu Token" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label data-translate="token_symbol">Símbolo:</label>
+                            <input type="text" id="tokenSymbol" placeholder="Ex: MTK" maxlength="5" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label data-translate="token_supply">Supply Total:</label>
+                            <input type="number" id="tokenSupply" placeholder="1000000" min="1" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label data-translate="desired_prefix">Prefixo Desejado (opcional):</label>
+                            <input type="text" id="desiredPrefix" placeholder="0x1234..." maxlength="10">
+                            <small data-translate="prefix_help">Deixe vazio para gerar automaticamente</small>
+                        </div>
+
+                        <div class="form-group">
+                            <label data-translate="salt_value">Salt (Valor único):</label>
+                            <input type="text" id="saltValue" readonly>
+                            <button type="button" class="btn-generate" onclick="generateSalt()">
+                                <i class="fas fa-dice"></i>
+                                <span data-translate="generate">Gerar</span>
+                            </button>
+                        </div>
+
+                        <div class="preview-section">
+                            <h4 data-translate="preview">Prévia:</h4>
+                            <div class="preview-card">
+                                <div class="preview-item">
+                                    <span data-translate="predicted_address">Endereço Previsto:</span>
+                                    <code id="predictedAddress">-</code>
+                                    <button type="button" class="btn-copy" onclick="copyToClipboard('predictedAddress')">
+                                        <i class="fas fa-copy"></i>
+                                    </button>
+                                </div>
+                                <div class="preview-item">
+                                    <span data-translate="gas_estimate">Gas Estimado:</span>
+                                    <span id="gasEstimate">~50,000 GWEI</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="button" class="btn-secondary" onclick="calculateAddress()">
+                                <i class="fas fa-calculator"></i>
+                                <span data-translate="calculate_address">Calcular Endereço</span>
+                            </button>
+                            
+                            <button type="submit" class="btn-primary">
+                                <i class="fas fa-rocket"></i>
+                                <span data-translate="create_deploy">Criar & Deploy</span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <!-- Admin Section -->
+        <section id="admin" class="section admin-only" style="display: none;">
+            <div class="container">
+                <div class="section-header">
+                    <h2 data-translate="admin_panel">Painel Administrativo</h2>
+                    <p data-translate="admin_subtitle">Gerenciar sistema e usuários</p>
+                </div>
+
+                <div class="admin-grid">
+                    <div class="admin-card">
+                        <h3 data-translate="system_stats">Estatísticas do Sistema</h3>
+                        <div class="admin-stats">
+                            <div class="admin-stat">
+                                <span data-translate="total_users">Total de Usuários:</span>
+                                <span id="totalUsers">0</span>
+                            </div>
+                            <div class="admin-stat">
+                                <span data-translate="total_deployments">Total de Deployments:</span>
+                                <span id="totalDeployments">0</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="admin-card">
+                        <h3 data-translate="recent_activity">Atividade Recente</h3>
+                        <div id="recentActivity" class="activity-list">
+                            <!-- Activity items will be loaded here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Toast Notifications -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <!-- Scripts -->
+    <script src="js/translations.js"></script>
+    <script src="js/web3.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
