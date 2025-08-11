@@ -1,4 +1,11 @@
-
+-------------------
+observações sobre o sistema
+- não gera o endereço personalizado
+- não faz cobrança
+- não tranfere os dados para blockchain
+- não gera contrato
+- utiliza um endereço unico para factory
+-------------------
 # 🚀 SCCafé - Smart Contract Factory
 
 Sistema completo para criação de tokens com endereços determinísticos usando tecnologia CREATE2.
