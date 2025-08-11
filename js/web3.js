@@ -23,7 +23,7 @@ class Web3Manager {
         };
         
         // Token Factory Contract (CREATE2)
-        this.factoryAddress = '0x...'; // Será definido quando deployado
+        this.factoryAddress = '0x2cf724171a998C3d470048AC2F1b187a48A5cafE'; // Será definido quando deployado
         this.factoryABI = [
             "function createToken(string memory name, string memory symbol, uint256 totalSupply, bytes32 salt) external returns (address)",
             "function computeAddress(bytes32 salt, bytes memory bytecode) external view returns (address)",
